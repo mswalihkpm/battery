@@ -26,6 +26,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const syncUserProfile = async (authUser: User | null) => {
+    if (!authUser) return;
+
+    const metadata = authUser.user_metadata || {};
+    const fullName = metadata.full_name || metadata.name || metadata.user_name || null;
+    const phone = authUser.phone || metadata.phone || null;
+
+    const { error } = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          user_id: authUser.id,
+          full_name: fullName,
+          phone,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      );
+
+    if (error) {
+      console.error("Failed to sync profile", error);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -33,6 +57,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        if (event === "SIGNED_IN" && session?.user) {
+          void syncUserProfile(session.user);
+        }
       }
     );
 
@@ -41,6 +69,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      if (session?.user) {
+        void syncUserProfile(session.user);
+      }
     });
 
     return () => subscription.unsubscribe();
