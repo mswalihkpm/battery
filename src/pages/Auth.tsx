@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Phone, ArrowLeft, Loader2, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "@/firebase";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -21,14 +19,37 @@ const Auth = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const postLoginRedirectHandled = useRef(false);
 
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
+    if (!user || postLoginRedirectHandled.current) return;
+
+    const redirectUserAfterLogin = async () => {
+      postLoginRedirectHandled.current = true;
+
+      const { count, error } = await supabase
+        .from("addresses")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+
+      if (error) {
+        navigate("/");
+        return;
+      }
+
+      if ((count ?? 0) === 0) {
+        toast.info("Please add your address and pincode after login.");
+        navigate("/settings/addresses");
+        return;
+      }
+
       navigate("/");
-    }
+    };
+
+    redirectUserAfterLogin();
   }, [user, navigate]);
 
   const handleAdminCodeSubmit = async (e: React.FormEvent) => {
@@ -45,11 +66,16 @@ const Auth = () => {
 const handleGoogleSignIn = async () => {
   setLoading(true);
   try {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-    navigate("/");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth`,
+      },
+    });
+
+    if (error) throw error;
   } catch (error: any) {
-    toast.error("Google sign in failed");
+    toast.error(error?.message || "Google sign in failed");
   } finally {
     setLoading(false);
   }
@@ -58,11 +84,16 @@ const handleGoogleSignIn = async () => {
  const handleAppleSignIn = async () => {
   setLoading(true);
   try {
-    const provider = new OAuthProvider("apple.com");
-    await signInWithPopup(auth, provider);
-    navigate("/");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "apple",
+      options: {
+        redirectTo: `${window.location.origin}/auth`,
+      },
+    });
+
+    if (error) throw error;
   } catch (error: any) {
-    toast.error("Apple sign in failed");
+    toast.error(error?.message || "Apple sign in failed");
   } finally {
     setLoading(false);
   }
