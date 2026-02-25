@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* TARBO STYLE Light Mode - White & Dark Green */
+    --background: 0 0% 98%;
+    --foreground: 150 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 30% 10%;
+
+    --primary: 152 69% 31%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 150 20% 94%;
+    --secondary-foreground: 150 30% 15%;
+
+    --muted: 150 15% 92%;
+    --muted-foreground: 150 10% 45%;
+
+    --accent: 152 69% 31%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 152 69% 31%;
+
+    --radius: 0.75rem;
+
+    /* Custom TARBO colors */
+    --tarbo-green: 152 69% 31%;
+    --tarbo-green-light: 152 60% 45%;
+    --tarbo-green-dark: 152 75% 20%;
+    --tarbo-gold: 45 90% 55%;
+    --tarbo-surface: 0 0% 100%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(152, 69%, 31%) 0%, hsl(152, 75%, 20%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(152, 60%, 45%) 0%, hsl(152, 69%, 31%) 100%);
+    --gradient-hero: linear-gradient(180deg, transparent 0%, hsl(0, 0%, 0%, 0.7) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px hsl(152, 30%, 10%, 0.08);
+    --shadow-md: 0 4px 16px hsl(152, 30%, 10%, 0.12);
+    --shadow-lg: 0 8px 32px hsl(152, 30%, 10%, 0.16);
+    --shadow-glow: 0 0 30px hsl(152, 69%, 31%, 0.3);
+  }
+
+  .dark {
+    /* TARBO STYLE Dark Mode - Black & Green */
+    --background: 150 20% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 150 20% 7%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 150 20% 7%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 152 69% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 150 15% 15%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 150 15% 12%;
+    --muted-foreground: 150 10% 60%;
+
+    --accent: 152 69% 42%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 15% 18%;
+    --input: 150 15% 18%;
+    --ring: 152 69% 42%;
+
+    /* Custom TARBO colors - Dark mode */
+    --tarbo-green: 152 69% 42%;
+    --tarbo-green-light: 152 60% 55%;
+    --tarbo-green-dark: 152 75% 25%;
+    --tarbo-gold: 45 90% 60%;
+    --tarbo-surface: 150 20% 10%;
+
+    /* Shadows - Dark mode */
+    --shadow-sm: 0 2px 8px hsl(0, 0%, 0%, 0.3);
+    --shadow-md: 0 4px 16px hsl(0, 0%, 0%, 0.4);
+    --shadow-lg: 0 8px 32px hsl(0, 0%, 0%, 0.5);
+    --shadow-glow: 0 0 40px hsl(152, 69%, 42%, 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .tarbo-gradient {
+    background: var(--gradient-primary);
+  }
+
+  .tarbo-gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .tarbo-shadow {
+    box-shadow: var(--shadow-md);
+  }
+
+  .tarbo-shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .tarbo-glass {
+    @apply backdrop-blur-md;
+    background: hsl(var(--card) / 0.8);
+  }
+
+  .tarbo-text-gradient {
+    @apply bg-clip-text text-transparent;
+    background: var(--gradient-accent);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
