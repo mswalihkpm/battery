@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Phone, ArrowLeft, Loader2, Lock, KeyRound } from "lucide-react";
+import { Phone, ArrowLeft, Loader2, KeyRound } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "@/firebase";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -45,9 +43,14 @@ const Auth = () => {
 const handleGoogleSignIn = async () => {
   setLoading(true);
   try {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-    navigate("/");
+    const redirectTo = `${window.location.origin}/`;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo },
+    });
+    if (error) {
+      toast.error("Google sign in failed");
+    }
   } catch (error: any) {
     toast.error("Google sign in failed");
   } finally {
@@ -58,9 +61,14 @@ const handleGoogleSignIn = async () => {
  const handleAppleSignIn = async () => {
   setLoading(true);
   try {
-    const provider = new OAuthProvider("apple.com");
-    await signInWithPopup(auth, provider);
-    navigate("/");
+    const redirectTo = `${window.location.origin}/`;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "apple",
+      options: { redirectTo },
+    });
+    if (error) {
+      toast.error("Apple sign in failed");
+    }
   } catch (error: any) {
     toast.error("Apple sign in failed");
   } finally {
